@@ -1,0 +1,153 @@
+ ---- Assignment1 solution - Create stage & load data ----
+ 
+-- create stage object
+CREATE OR REPLACE STAGE EXERCISE_DB.public.aws_stage
+    url='s3://snowflake-assignments-mc/loadingdata';
+
+-- List files in stage
+LIST @EXERCISE_DB.public.aws_stage;
+
+-- Load the data 
+COPY INTO EXERCISE_DB.PUBLIC.CUSTOMERS
+    FROM @aws_stage
+    file_format= (type = csv field_delimiter=';' skip_header=1)
+    
+  
+  
+    
+@aws_stage IF this source give error our datbase path is not change automatically in sql workesheet then provide full path 
+ex - FROM @EXERCISE_DB.public.aws_stage
+    
+    
+ 
+ ---- Assignment2 - Create file format & load data ----
+ 
+-- create stage object
+CREATE OR REPLACE STAGE EXERCISE_DB.public.aws_stage
+    url='s3://snowflake-assignments-mc/fileformat';
+
+-- List files in stage
+LIST @EXERCISE_DB.public.aws_stage;
+
+-- create file format object
+CREATE OR REPLACE FILE FORMAT EXERCISE_DB.public.aws_fileformat
+TYPE = CSV
+FIELD_DELIMITER='|'
+SKIP_HEADER=1;
+
+-- Load the data 
+COPY INTO EXERCISE_DB.PUBLIC.CUSTOMERS
+    FROM @aws_stage
+      file_format= (FORMAT_NAME=EXERCISE_DB.public.aws_fileformat)
+      
+-- Alternative
+COPY INTO EXERCISE_DB.PUBLIC.CUSTOMERS
+    FROM @aws_stage
+      file_format= EXERCISE_DB.public.aws_fileformat
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+ ---- Assignment 3 - Create file format & load data ----
+ 
+-- create table
+create or replace table employees(
+  customer_id int,
+  first_name varchar(50),
+  last_name varchar(50),
+  email varchar(50),
+  age int,
+  city varchar(50));
+ 
+ 
+-- create file format object
+CREATE OR REPLACE FILE FORMAT EXERCISE_DB.public.aws_fileformat
+TYPE = CSV
+FIELD_DELIMITER=','
+SKIP_HEADER=1;
+
+
+-- create stage object
+CREATE OR REPLACE STAGE EXERCISE_DB.public.aws_stage
+    url='s3://snowflake-assignments-mc/copyoptions/example1';
+    
+
+-- List files in stage
+LIST @EXERCISE_DB.public.aws_stage;      
+
+
+-- Use validation mode
+COPY INTO EXERCISE_DB.PUBLIC.EMPLOYEES
+    FROM @aws_stage
+      file_format= EXERCISE_DB.public.aws_fileformat
+      VALIDATION_MODE = RETURN_ERRORS;
+ 
+
+-- Use ON_ERROR
+COPY INTO EXERCISE_DB.PUBLIC.EMPLOYEES
+    FROM @aws_stage
+      file_format= EXERCISE_DB.public.aws_fileformat
+      ON_ERROR = CONTINUE;      
+      
+      
+      
+      
+      
+      
+      
+      
+ ---- Assignment 4 - Create file format & load data with validation mode & Use Turncatecolumn ----      
+      
+-- Create table
+create or replace table employees(
+  customer_id int,
+  first_name varchar(50),
+  last_name varchar(50),
+  email varchar(50),
+  age int,
+  department varchar(50));
+
+
+-- create stage object
+CREATE OR REPLACE STAGE EXERCISE_DB.public.aws_stage
+    url='s3://snowflake-assignments-mc/copyoptions/example2';
+ 
+-- create file format object
+CREATE OR REPLACE FILE FORMAT EXERCISE_DB.public.aws_fileformat
+TYPE = CSV
+FIELD_DELIMITER=','
+SKIP_HEADER=1;
+
+ 
+-- Use validation mode
+COPY INTO EXERCISE_DB.PUBLIC.EMPLOYEES
+    FROM @aws_stage
+      file_format= EXERCISE_DB.public.aws_fileformat
+      VALIDATION_MODE = RETURN_ERRORS;
+
+       
+-- Use TRUNCATECOLUMNS
+
+COPY INTO EXERCISE_DB.PUBLIC.EMPLOYEES
+    FROM @aws_stage
+      file_format= EXERCISE_DB.public.aws_fileformat
+      TRUNCATECOLUMNS = TRUE; 
+      
+      
+      
+      
+      
+      
+      
+      
+      
+  

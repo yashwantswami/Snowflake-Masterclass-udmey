@@ -1,0 +1,66 @@
+                       ---- Assignment1 - Load RAW JSON data ----
+
+1. What is the last name of the person in the first row (id=1)?
+Answer: Fasson
+
+Solution:
+
+--  Create database (only if not already created in previous assignment)
+create database EXERCISE_DB;
+ 
+USE EXERCISE_DB;
+
+
+ // First step: Load Raw JSON
+CREATE OR REPLACE stage JSONSTAGE
+     url='s3://snowflake-assignments-mc/unstructureddata/';
+
+CREATE OR REPLACE file format JSONFORMAT
+    TYPE = JSON;
+    
+    
+CREATE OR REPLACE table JSON_RAW (
+    raw_file variant);
+    
+COPY INTO JSON_RAW
+    FROM @JSONSTAGE
+    file_format= JSONFORMAT
+    
+SELECT * FROM JSON_RAW;
+
+
+
+                     ---- Assignment2 - Parsing & Handling Arrays ----
+
+
+1. What is the first skill of the person with first_name 'Florina'?
+
+Answer: Hatha Yoga.
+
+Solution:
+
+// Second step: Parse & Analyse Raw JSON 
+
+SELECT * FROM JSON_RAW;
+
+// Selecting attribute/column
+SELECT 
+$1:first_name::STRING,
+$1:last_name::STRING,
+$1:Skills[0]::STRING,
+$1:Skills[1]::STRING
+FROM JSON_RAW;
+
+
+// Copy data in table
+CREATE TABLE SKILLS AS
+SELECT 
+$1:first_name::STRING as first_name,
+$1:last_name::STRING as last_name,
+$1:Skills[0]::STRING as Skill_1,
+$1:Skills[1]::STRING as Skill_2
+FROM JSON_RAW;
+
+// Query from table
+SELECT * FROM SKILLS
+WHERE FIRST_NAME='Florina';

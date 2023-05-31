@@ -1,0 +1,74 @@
+//   Start Assignment 1: Time travel 
+
+
+How did you do it? Feel free to share the code or your experience.
+
+Solution:
+
+1. Create exercise table
+
+-- Switch to role of accountadmin --
+ 
+USE ROLE ACCOUNTDMIN;
+USE DATABASE DEMO_DB;
+USE WAREHOUSE COMPUTE_WH;
+ 
+CREATE OR REPLACE TABLE DEMO_DB.PUBLIC.PART
+AS
+SELECT * FROM "SNOWFLAKE_SAMPLE_DATA"."TPCH_SF1"."PART";
+ 
+SELECT * FROM PART
+ORDER BY P_MFGR DESC;
+
+
+2. Update the table
+
+UPDATE DEMO_DB.PUBLIC.PART
+SET P_MFGR='Manufacturer#CompanyX'
+WHERE P_MFGR='Manufacturer#5';
+ 
+----> Note down query id here:
+ 
+SELECT * FROM PART
+ORDER BY P_MFGR DESC;
+
+-- Step 3.1: Travel back using the offset until you get the result of before the update
+
+SELECT * FROM PART at (OFFSET => -60*1.5) ORDER BY P_MFGR DESC;
+
+
+-- Step 3.2: Travel back using the query id to get the result before the update
+
+SELECT * FROM PART before (statement => 'your-query-id');
+
+
+
+
+//   Start Assignment 2:  Undrop 
+
+1. Have you been able to undrop the schema and bring back the table again?
+Solution:
+
+
+1. Create a database & Schema
+
+CREATE DATABASE TIMETRAVEL_EXERCISE;
+CREATE SCHEMA TIMETRAVEL_EXERCISE.COMPANY_X;
+
+
+2. Create a customers table
+
+CREATE TABLE CUSTOMER AS
+SELECT * FROM SNOWFLAKE_SAMPLE_DATA.TPCH_SF1.CUSTOMER
+LIMIT 500;
+
+
+3. Drop the schema (assuming it happened by accident)
+
+DROP SCHEMA TIMETRAVEL_EXERCISE.COMPANY_X;
+
+4.Have you been able to undrop the schema and bring back the table again?
+
+This can be done be simple executing the UNDROP command on the schema.
+
+UNDROP SCHEMA TIMETRAVEL_EXERCISE.COMPANY_X;

@@ -1,0 +1,6 @@
+High Level steps - How can we work with unstructured data
+
+1. Create Stage - Create stage object so create conncection to location where our file is stored
+2. Load Raw data - Load data into seprate table which has one column and this column is of special data type "Variant" which handle unstructured data
+3. Analyse & Parse - For Analyse we use snowflake funciton
+4. Flatten & Load 
